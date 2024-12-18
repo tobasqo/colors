@@ -11,7 +11,8 @@ type Rectangle = {
 
 function generateNRectangles(n: number) {
   const rects: Rectangle[] = [];
-  const baseColor = colors.newRGBA(220, 100, 100);
+  const baseColorString = '#ff6666ff';
+  const baseColor = colors.RGBAfromString(baseColorString);
   const rectColors = colors.generateNComplementaryColorsRGBA(baseColor, n);
   console.log(rectColors);
   let rect: Rectangle;
