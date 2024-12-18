@@ -115,7 +115,7 @@ export function newRGBA(
   red: number,
   green: number,
   blue: number,
-  alpha: number = 0x00,
+  alpha: number = 0xff,
 ) {
   validateColorValueLimits(red, MIN_RGB_VALUE, MAX_RGB_VALUE);
   validateColorValueLimits(green, MIN_RGB_VALUE, MAX_RGB_VALUE);
@@ -124,7 +124,7 @@ export function newRGBA(
   return { red, green, blue, alpha } as ColorRGBA;
 }
 
-export function newHSVA(hue: number, saturation: number, value: number, alpha: number = 0x00) {
+export function newHSVA(hue: number, saturation: number, value: number, alpha: number = 0xff) {
   validateColorValueLimits(hue, MIN_DEGREES, MAX_DEGREES);
   validateColorValueLimits(saturation, MIN_SATURATION, MAX_SATURATION);
   validateColorValueLimits(value, MIN_HSV_VALUE, MAX_HSV_VALUE);
@@ -165,6 +165,69 @@ export function RGBAtoString(rgba: ColorRGBA) {
 export function HSVAtoString(hsva: ColorHSVA) {
   const rgba = HSVAtoRGBA(hsva);
   return RGBAtoString(rgba);
+}
+
+export function generateNColorsHSVA(n: number) {
+  let colors: ColorHSVA[] = [];
+  
+  const base = MAX_DEGREES / n;
+  const saturation = 100;
+  const value = 100;
+  const alpha = 255;
+  
+  let hue: number;
+  let color: ColorHSVA;
+  for (let i = 0; i <= n; i++) {
+    hue = Math.floor(i * base);
+    color = newHSVA(hue, saturation, value, alpha);
+    colors.push(color);
+  }
+  return colors;
+}
+
+export function generateNColorsRGBA(n: number) {
+  const colorsRGBA: ColorRGBA[] = [];
+  let colorsHSVA = generateNColorsHSVA(n);
+  
+  let colorRGBA: ColorRGBA;
+  for (let colorHSVA of colorsHSVA) {
+    colorRGBA = HSVAtoRGBA(colorHSVA);
+    colorsRGBA.push(colorRGBA)
+  }
+  
+  return colorsRGBA;
+}
+
+export function generateNComplementaryColorsHSVA(baseColor: ColorHSVA, n: number) {
+  const {hue, saturation, value, alpha} = baseColor;
+  
+  const colorsHSVA: ColorHSVA[] = [];
+  let colorHSVA: ColorHSVA;
+  
+  const base = MAX_DEGREES / n;
+  
+  let hueDerived: number;
+  for (let i = 0; i <= n; i++) {
+    hueDerived = (hue + Math.floor(i * base)) % 360;
+    colorHSVA = newHSVA(hueDerived, saturation, value, alpha);
+    colorsHSVA.push(colorHSVA);
+  }
+  
+  return colorsHSVA;
+}
+
+export function generateNComplementaryColorsRGBA(baseColor: ColorRGBA, n: number) {
+  const hsva = RGBAtoHSVA(baseColor);
+  const hsvaComplementary = generateNComplementaryColorsHSVA(hsva, n);
+  
+  const rgbaComplementary: ColorRGBA[] = [];
+  let rgba: ColorRGBA;
+  for (const color of hsvaComplementary) {
+    rgba = HSVAtoRGBA(color);
+    rgbaComplementary.push(rgba);
+  }
+  
+  return rgbaComplementary;
 }
 
 function validateColorValueLimits(

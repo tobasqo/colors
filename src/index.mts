@@ -1,15 +1,41 @@
 import * as colors from "./colors.mjs";
+import { RGBAtoString } from "./colors.mjs";
 
-const rgb = colors.RGBAfromString("#ff0000ee");
+type Rectangle = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+}
 
-const rgb_to_hsv = colors.RGBAtoHSVA(rgb);
-const rgb_to_hsv_to_rgb = colors.HSVAtoRGBA(rgb_to_hsv);
+function generateNRectangles(n: number) {
+  const rects: Rectangle[] = [];
+  const baseColor = colors.newRGBA(220, 100, 100);
+  const rectColors = colors.generateNComplementaryColorsRGBA(baseColor, n);
+  console.log(rectColors);
+  let rect: Rectangle;
+  for (let i = 0; i < n; i++) {
+    rect = {x: i*110, y: i*110, width: 100, height: 100, color: RGBAtoString(rectColors[i])};
+    rects.push(rect);
+  }
+  return rects;
+}
 
-const rgbaDiv = document.getElementById('rgba')!;
-rgbaDiv.style.background = colors.RGBAtoString(rgb);
+function drawRectangles(
+  ctx: CanvasRenderingContext2D,
+  rectangles: Rectangle[],
+) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  rectangles.forEach(({x, y, width, height, color}) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+  })
+}
 
-const hsvaDiv = document.getElementById('rgba-to-hsva')!;
-hsvaDiv.style.background = colors.HSVAtoString(rgb_to_hsv);
-
-const hsvaToRgbaDiv = document.getElementById('hsva-to-rgba')!;
-hsvaToRgbaDiv.style.background = colors.RGBAtoString(rgb_to_hsv_to_rgb);
+const canvas = document.getElementById('canvas')! as HTMLCanvasElement;
+const ctx = canvas.getContext('2d')!;
+const N = 5;
+const rects = generateNRectangles(N);
+drawRectangles(ctx, rects);
