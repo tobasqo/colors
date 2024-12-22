@@ -14,10 +14,10 @@ function generateNRectangles(n: number) {
   const baseColorString = '#ff6666ff';
   const baseColor = colors.RGBAfromString(baseColorString);
   const rectColors = colors.generateNComplementaryColorsRGBA(baseColor, n);
-  console.log(rectColors);
+  
   let rect: Rectangle;
   for (let i = 0; i < n; i++) {
-    rect = {x: i*110, y: i*110, width: 100, height: 100, color: RGBAtoString(rectColors[i])};
+    rect = {x: i*110, y: 10, width: 100, height: 100, color: RGBAtoString(rectColors[i])};
     rects.push(rect);
   }
   return rects;
@@ -37,6 +37,6 @@ function drawRectangles(
 
 const canvas = document.getElementById('canvas')! as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
-const N = 5;
+const N = 9;
 const rects = generateNRectangles(N);
 drawRectangles(ctx, rects);
